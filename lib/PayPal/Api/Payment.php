@@ -27,6 +27,7 @@ use PayPal\Rest\ApiContext;
  * @property string create_time
  * @property string update_time
  * @property \PayPal\Api\Links[] links
+ * @property \PayPal\Api\ApplicationContext application_context
  */
 class Payment extends PayPalResourceModel
 {
@@ -556,7 +557,27 @@ class Payment extends PayPalResourceModel
 		parse_str(parse_url($this->getApprovalLink(), PHP_URL_QUERY), $query);
 		return !isset($query[$parameter_name]) ? null : $query[$parameter_name];
 	}
-	
+
+    /**
+     * Use the application context resource to customize payment flow experience for your buyers.
+     * @param string $update_time
+     *
+     * @return $this
+     */
+    public function setApplicationContext($application_context)
+    {
+        $this->application_context = $application_context;
+        return $this;
+    }
+
+    /**
+     * Use the application context resource to customize payment flow experience for your buyers.
+     * @return \PayPal\Api\ApplicationContext
+     */
+    public function getApplicationContext()
+    {
+        return $this->application_context;
+    }
     /**
      * Creates and processes a payment. In the JSON request body, include a `payment` object with the intent, payer, and transactions. For PayPal payments, include redirect URLs in the `payment` object.
      *
