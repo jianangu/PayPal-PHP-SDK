@@ -8,6 +8,24 @@ use PayPal\Common\PayPalResourceModel;
 use PayPal\Rest\ApiContext;
 use PayPal\Validation\ArgumentValidator;
 
+/**
+ * Class Reporting
+ *
+ * Lets you create, process and manage payments.
+ *
+ * @package PayPal\Api
+ * @property \PayPal\Common\PayPalModel[] transaction_details
+ * @property string account_number
+ * @property string start_date
+ * @property string end_date
+ * @property string last_refreshed_datetime
+ * @property integer page
+ * @property integer total_items
+ * @property integer total_pages
+ *
+ * @property \PayPal\Api\Links[] links
+ * @property \PayPal\Api\Error[] errors
+ */
 class Reporting extends PayPalResourceModel
 {
     /**
