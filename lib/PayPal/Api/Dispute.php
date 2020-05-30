@@ -37,13 +37,18 @@ class Dispute extends PayPalResourceModel
     {
         ArgumentValidator::validate($params, 'params');
         $payLoad = "";
-        $allowedParams = array(
-//            'start_time' => 1,
-            'disputed_transaction_id' => 1,
-            'page_size' => 1,
-//            'next_page_token' => 1,
-//            'page' => 1,
-        );
+        $allowedParams = array();
+        if (array_key_exists('start_time', $params)) {
+//            $allowedParams['start_time'] = 1;
+            if (isset($params['page_size'])) {
+                $allowedParams['page_size'] = 1;
+            }
+            if (isset($params['next_page_token'])) {
+                $allowedParams['next_page_token'] = 1;
+            }
+        } elseif (array_key_exists('disputed_transaction_id', $params)) {
+//            $allowedParams['disputed_transaction_id'] = 1;
+        }
         $payLoad = '';
         $json = self::executeCall(
             "/v1/customer/disputes?" . http_build_query(array_intersect_key($params, $allowedParams)),
@@ -61,20 +66,16 @@ class Dispute extends PayPalResourceModel
     /**
      * search transactions that were made to the merchant who issues the request. Payments can be in any state.
      *
-     * @param array $params
+     * @param string $params
      * @param ApiContext $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
      * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
      * @return PaymentHistory
      */
-    public function details($params, $apiContext = null, $restCall = null)
+    public function details($dispute_id, $apiContext = null, $restCall = null)
     {
-        ArgumentValidator::validate($params, 'params');
         $payLoad = "";
-        $allowedParams = array(
-            'dispute_id' => 1,
-        );
         $json = self::executeCall(
-            "/v1/customer/disputes/?" . http_build_query(array_intersect_key($params, $allowedParams)),
+            "/v1/customer/disputes/$dispute_id",
             "GET",
             $payLoad,
             null,
