@@ -47,7 +47,7 @@ class Dispute extends PayPalResourceModel
                 $allowedParams['next_page_token'] = 1;
             }
         } elseif (array_key_exists('disputed_transaction_id', $params)) {
-//            $allowedParams['disputed_transaction_id'] = 1;
+            $allowedParams['disputed_transaction_id'] = 1;
         }
         $payLoad = '';
         $json = self::executeCall(
