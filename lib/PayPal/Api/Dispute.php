@@ -39,7 +39,7 @@ class Dispute extends PayPalResourceModel
         $payLoad = "";
         $allowedParams = array();
         if (array_key_exists('start_time', $params)) {
-//            $allowedParams['start_time'] = 1;
+            $allowedParams['start_time'] = 1;
             if (isset($params['page_size'])) {
                 $allowedParams['page_size'] = 1;
             }
