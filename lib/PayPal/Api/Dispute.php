@@ -31,7 +31,7 @@ class Dispute extends PayPalResourceModel
      * @param array $params
      * @param ApiContext $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
      * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
-     * @return PaymentHistory
+     * @return $this
      */
     public function search($params, $apiContext = null, $restCall = null)
     {
@@ -69,7 +69,7 @@ class Dispute extends PayPalResourceModel
      * @param string $params
      * @param ApiContext $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
      * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
-     * @return PaymentHistory
+     * @return $this
      */
     public function details($dispute_id, $apiContext = null, $restCall = null)
     {
