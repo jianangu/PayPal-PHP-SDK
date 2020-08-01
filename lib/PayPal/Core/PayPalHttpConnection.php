@@ -4,6 +4,7 @@ namespace PayPal\Core;
 
 use PayPal\Exception\PayPalConfigurationException;
 use PayPal\Exception\PayPalConnectionException;
+use PayPal\Exception\PPConnectionException;
 
 /**
  * A wrapper class based on the curl extension.
@@ -17,7 +18,12 @@ class PayPalHttpConnection
      * @var PayPalHttpConfig
      */
     private $httpConfig;
-
+    /**
+     * HTTP status codes for which a retry must be attempted
+     * retry is currently attempted for Request timeout, Bad Gateway,
+     * Service Unavailable and Gateway timeout errors.
+     */
+    private static $retryCodes = array('408', '502', '503', '504',);
     /**
      * LoggingManager
      *
@@ -39,7 +45,7 @@ class PayPalHttpConnection
      * Default Constructor
      *
      * @param PayPalHttpConfig $httpConfig
-     * @param array            $config
+     * @param array $config
      * @throws PayPalConfigurationException
      */
     public function __construct(PayPalHttpConfig $httpConfig, array $config)
@@ -72,7 +78,8 @@ class PayPalHttpConnection
      * @param string $data
      * @return int
      */
-    protected function parseResponseHeaders($ch, $data) {
+    protected function parseResponseHeaders($ch, $data)
+    {
         if (!$this->skippedHttpStatusLine) {
             $this->skippedHttpStatusLine = true;
             return strlen($data);
@@ -87,7 +94,7 @@ class PayPalHttpConnection
         if (strpos($trimmedData, ":") == false) {
             return strlen($data);
         }
-        
+
         list($key, $value) = explode(":", $trimmedData, 2);
 
         $key = trim($key);
@@ -112,9 +119,10 @@ class PayPalHttpConnection
      * @param array $arr
      * @return string
      */
-    protected function implodeArray($arr) {
+    protected function implodeArray($arr)
+    {
         $retStr = '';
-        foreach($arr as $key => $value) {
+        foreach ($arr as $key => $value) {
             $retStr .= $key . ': ' . $value . ', ';
         }
         rtrim($retStr, ', ');
@@ -179,6 +187,15 @@ class PayPalHttpConnection
             $result = curl_exec($ch);
             //Retrieve Response Status
             $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        }
+
+        $retries = 0;
+        if (in_array($httpStatus, self::$retryCodes) && $this->httpConfig->getHttpRetryCount() != null) {
+            $this->logger->info("Got $httpStatus response from server. Retrying");
+            do {
+                $result = curl_exec($ch);
+                $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            } while (in_array($httpStatus, self::$retryCodes) && (++$retries < $this->httpConfig->getHttpRetryCount()));
         }
 
         //Throw Exception if Retries and Certificates doenst work
