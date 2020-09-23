@@ -85,4 +85,27 @@ class Dispute extends PayPalResourceModel
         $this->fromJson($json);
         return $this;
     }
+    /**
+     * search transactions that were made to the merchant who issues the request. Payments can be in any state.
+     *
+     * @param array $params
+     * @param ApiContext $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
+     * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
+     * @return $this
+     */
+    public function accept_claim($dispute_id,$params, $apiContext = null, $restCall = null)
+    {
+        $payLoad = json_encode($params);
+        $json = self::executeCall(
+            "/v1/customer/disputes/$dispute_id/accept-claim",
+//            "/v1/customer/disputes?" . http_build_query($params),
+            "POST",
+            $payLoad,
+            null,
+            $apiContext,
+            $restCall
+        );
+        $this->fromJson($json);
+        return $this;
+    }
 }
