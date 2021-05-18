@@ -48,6 +48,17 @@ class Dispute extends PayPalResourceModel
             }
         } elseif (array_key_exists('disputed_transaction_id', $params)) {
             $allowedParams['disputed_transaction_id'] = 1;
+        } elseif (array_key_exists('update_time_after', $params)) {
+            $allowedParams['update_time_before'] = 1;
+            if (isset($params['page_size'])) {
+                $allowedParams['page_size'] = 1;
+            }
+            if (isset($params['next_page_token'])) {
+                $allowedParams['next_page_token'] = 1;
+            }
+            if (array_key_exists('update_time_before', $params)) {
+                $allowedParams['update_time_before'] = 1;
+            }
         }
         $payLoad = '';
         $json = self::executeCall(
@@ -85,6 +96,7 @@ class Dispute extends PayPalResourceModel
         $this->fromJson($json);
         return $this;
     }
+
     /**
      * search transactions that were made to the merchant who issues the request. Payments can be in any state.
      *
@@ -93,7 +105,7 @@ class Dispute extends PayPalResourceModel
      * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
      * @return $this
      */
-    public function accept_claim($dispute_id,$params, $apiContext = null, $restCall = null)
+    public function accept_claim($dispute_id, $params, $apiContext = null, $restCall = null)
     {
         $payLoad = json_encode($params);
         $json = self::executeCall(
