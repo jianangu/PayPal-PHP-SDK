@@ -49,7 +49,7 @@ class Dispute extends PayPalResourceModel
         } elseif (array_key_exists('disputed_transaction_id', $params)) {
             $allowedParams['disputed_transaction_id'] = 1;
         } elseif (array_key_exists('update_time_after', $params)) {
-            $allowedParams['update_time_before'] = 1;
+            $allowedParams['update_time_after'] = 1;
             if (isset($params['page_size'])) {
                 $allowedParams['page_size'] = 1;
             }
