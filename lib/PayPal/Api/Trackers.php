@@ -14,7 +14,7 @@ use PayPal\Rest\ApiContext;
  *
  * @package PayPal\Api
  * @property string id
- * @property \PayPal\Api\Tracker[] trackers
+ * @property Tracker[] trackers
  * @property \PayPal\Api\Links[] links
  * @property \PayPal\Api\Error[] errors
  */
@@ -23,7 +23,7 @@ class Trackers extends PayPalResourceModel
     /**
      * An array of tracking information for shipments.
      *
-     * @return \PayPal\Api\Tracker[]
+     * @return Tracker[]
      */
     public function getTrackers()
     {
@@ -33,7 +33,7 @@ class Trackers extends PayPalResourceModel
     /**
      * An array of tracking information for shipments..
      *
-     * @param \PayPal\Api\Tracker[] $trackers
+     * @param Tracker[] $trackers
      *
      * @return $this
      */
@@ -46,7 +46,7 @@ class Trackers extends PayPalResourceModel
     /**
      * Append tracking information to this list.
      *
-     * @param \PayPal\Api\Tracker $tracker
+     * @param Tracker $tracker
      * @return $this
      */
     public function addTrackers($tracker)
@@ -124,4 +124,27 @@ class Trackers extends PayPalResourceModel
         );
     }
 
+    /**
+     * Updates or cancels the tracking information for a PayPal transaction, by ID. To cancel tracking information, call this method and set the status to CANCELLED. For more information, see Update or cancel tracking information.  *
+     * @param ApiContext $apiContext is the APIContext for this call. It can be used to pass dynamic configuration and credentials.
+     * @param PayPalRestCall $restCall is the Rest Call Service that is used to make rest calls
+     * @return Tracker
+     */
+    public function show($apiContext = null, $restCall = null)
+    {
+        $obj_arr = $this->getTrackers();
+        $obj = array_pop($obj_arr);
+        $id = $obj->getTransactionId() . '-' . $obj->getTrackingNumber();
+        $json = self::executeCall(
+            "/v1/shipping/trackers/$id",
+            "GET",
+            null,
+            null,
+            $apiContext,
+            $restCall
+        );
+        $obj_rtn = new Tracker();
+        $obj_rtn->fromJson($json);
+        return $obj_rtn;
+    }
 }
